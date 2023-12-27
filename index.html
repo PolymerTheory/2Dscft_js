@@ -68,7 +68,7 @@
                 document.getElementById(displayId).textContent = document.getElementById(sliderId).value;
             }
             
-            function displayField(fieldData, m) {
+            function displayField0(fieldData, m) {
                 const canvas = document.getElementById('outputCanvas');
                 const ctx = canvas.getContext('2d');
                 const width = m[1];
@@ -91,6 +91,46 @@
                 }
                 
             }
+            function interpolateBilinear(fieldData, x, y, width, height,m) {
+                const x1 = Math.floor(x)%m[1];
+                const y1 = Math.floor(y)%m[2];
+                const x2 = Math.ceil(x)%m[1];
+                const y2 = Math.ceil(y)%m[1];
+
+                const Q11 = fieldData[x1][y1];
+                const Q12 = fieldData[x1][y2];
+                const Q21 = fieldData[x2][y1];
+                const Q22 = fieldData[x2][y2];
+
+                const R1 = ((x2 - x) / (x2 - x1)) * Q11 + ((x - x1) / (x2 - x1)) * Q21;
+                const R2 = ((x2 - x) / (x2 - x1)) * Q12 + ((x - x1) / (x2 - x1)) * Q22;
+
+                const P = ((y2 - y) / (y2 - y1)) * R1 + ((y - y1) / (y2 - y1)) * R2;
+                return P;
+            }
+            function displayField(fieldData, m) {
+                const canvas = document.getElementById('outputCanvas');
+                const ctx = canvas.getContext('2d');
+                const width = m[1];
+                const height = m[2];
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Get max and min values
+                const { max, min } = getMaxMin(fieldData);
+
+                for (let canvasX = 0; canvasX < canvas.width; canvasX++) {
+                    for (let canvasY = 0; canvasY < canvas.height; canvasY++) {
+                        const fieldX = canvasX / canvas.width * width;
+                        const fieldY = canvasY / canvas.height * height;
+                        const value = interpolateBilinear(fieldData, fieldX, fieldY, width, height,m);
+                        const color = valueToGrayscale(value, min, max);
+                        ctx.fillStyle = color;
+                        ctx.fillRect(canvasX, canvasY, 1, 1); // Draw pixel by pixel
+                    }
+                }
+            }
+
             function getMaxMin(data) {
                 let max = -Infinity;
                 let min = Infinity;
@@ -386,10 +426,11 @@
                     // Update text box with current WA and WB
                     updateTextBox(fieldA, fieldB);
                     
-                    // Calculate the progress
-                    const progress = (iteration / maxit) * 100;
-                    document.getElementById('progressBar').style.width = progress + '%';
+
                 }
+                // Calculate the progress
+                const progress = (iteration / maxit) * 100;
+                document.getElementById('progressBar').style.width = progress + '%';
 
                 // Check for termination condition
                 if ((rmsDA < 1E-4 && rmsDB < 1E-4) || iteration>maxit || !(rmsDA==rmsDA) || !(rmsDB==rmsDB)) {
