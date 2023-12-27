@@ -13,6 +13,16 @@
                 width: 20px; /* Adjust the width as needed */
                 text-align: right;
             }
+            #progressContainer {
+                width: 100%;
+                background-color: #ddd;
+                margin: 20px 0;
+            }
+            #progressBar {
+                width: 0%;
+                height: 20px;
+                background-color: #4CAF50;
+            }
         </style>
     </head>
     <body>
@@ -39,6 +49,11 @@
             <input type="range" id="L" name="L" min="0.4" max="20.0" step="0.2" value="3.0" oninput="updateValue('L', 'LValue')"><br>
 
             <!-- Add similar sliders for D and M -->
+        </div>
+        
+        <p>Progress:</p>
+        <div id="progressContainer">
+            <div id="progressBar"></div>
         </div>
         
         <textarea id="inputData" rows="20" cols="50" placeholder="Enter output data here..." style="display: none;"></textarea><br>
@@ -151,6 +166,7 @@
                             phiA2D.push(phiA.slice(x * m2, (x + 1) * m2));
                         }
                         displayField(phiA2D, [m0, m1, m2]);
+                        
             }
             
             
@@ -345,6 +361,8 @@
                 let [phiA, phiB] = diblock(fieldA, fieldB, N, m, D, f);
                 let phiA2D = [];
                 
+                let maxit=100;
+                
                 // Calculate DA and DB
                 let DA = phiB.map((val, idx) => chiN * (val - 1.0 + f) - 0.5 * (fieldA[idx] - fieldB[idx]));
                 let DB = phiA.map((val, idx) => chiN * (val - f) + 0.5 * (fieldA[idx] - fieldB[idx]));
@@ -367,11 +385,14 @@
                     
                     // Update text box with current WA and WB
                     updateTextBox(fieldA, fieldB);
-                            
+                    
+                    // Calculate the progress
+                    const progress = (iteration / maxit) * 100;
+                    document.getElementById('progressBar').style.width = progress + '%';
                 }
 
                 // Check for termination condition
-                if ((rmsDA < 1E-4 && rmsDB < 1E-4) || iteration>100 || !(rmsDA==rmsDA) || !(rmsDB==rmsDB)) {
+                if ((rmsDA < 1E-4 && rmsDB < 1E-4) || iteration>maxit || !(rmsDA==rmsDA) || !(rmsDB==rmsDB)) {
                     for (let x = 0; x < m[1]; x++) {
                         phiA2D.push(phiA.slice(x * m[2], (x + 1) * m[2]));
                     }
