@@ -95,13 +95,27 @@
                 const x1 = Math.floor(x)%m[1];
                 const y1 = Math.floor(y)%m[2];
                 const x2 = Math.ceil(x)%m[1];
-                const y2 = Math.ceil(y)%m[1];
+                const y2 = Math.ceil(y)%m[2];
 
                 const Q11 = fieldData[x1][y1];
                 const Q12 = fieldData[x1][y2];
                 const Q21 = fieldData[x2][y1];
                 const Q22 = fieldData[x2][y2];
-
+                
+                
+                if (x1==x2 && y1==y2){
+                    return Q11;
+                }
+                
+                if (x1==x2){
+                    const Px = ((y2 - y) / (y2 - y1)) * Q11 + ((y - y1) / (y2 - y1)) * Q12;
+                    return Px;
+                }
+                if (y1==y2){
+                    const Py = ((x2 - x) / (x2 - x1)) * Q11 + ((x - x1) / (x2 - x1)) * Q21;
+                    return Py;
+                }
+                
                 const R1 = ((x2 - x) / (x2 - x1)) * Q11 + ((x - x1) / (x2 - x1)) * Q21;
                 const R2 = ((x2 - x) / (x2 - x1)) * Q12 + ((x - x1) / (x2 - x1)) * Q22;
 
