@@ -67,6 +67,8 @@
         <div id="progressContainer">
             <div id="progressBar"></div>
         </div>
+        <div id="rmsErrorDisplay">  </div><br>
+
         
         <textarea id="inputData" rows="20" cols="50" placeholder="Enter output data here..." style="display: none;"></textarea><br>
         
@@ -511,6 +513,9 @@
                 // Calculate the progress
                 const progress = (iteration / maxit) * 100;
                 document.getElementById('progressBar').style.width = progress + '%';
+                let rmsD = Math.sqrt((rmsDA * rmsDA + rmsDB * rmsDB) / 2);
+                document.getElementById('rmsErrorDisplay').textContent = `RMS error in fields: ${rmsD.toFixed(4)}`;
+
 
                 // Check for termination condition
                 if ((rmsDA < 1E-4 && rmsDB < 1E-4) || iteration>maxit || !(rmsDA==rmsDA) || !(rmsDB==rmsDB) || stopit) {
