@@ -483,7 +483,7 @@
                 let [phiA, phiB] = diblock(fieldA, fieldB, N, m, D, f,pA,pB,aa);
                 let phiA2D = [];
                 
-                let maxit=1000;
+                let maxit=200;
                 
                 // Calculate DA and DB
                 let DA = phiB.map((val, idx) => chiN * (val - 1.0 + f) - 0.5 * (fieldA[idx] - fieldB[idx]));
