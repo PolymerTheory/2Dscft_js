@@ -73,11 +73,19 @@
         <textarea id="inputData" rows="20" cols="50" placeholder="Enter output data here..." style="display: none;"></textarea><br>
         
         
-        <p>The image above shows the A monomer concentration for an AB diblock copolymer melt + A and B homopolymers. You can modify the input parameters: xN, f and L (system length, in units of Re), average A and B homopolymer concentrations (pA and pB - if they do not sum to 1, copolymer fills the rest) and the length radio of homopolymers to copolymers (Nh/N). You can draw on the image to change the state of the system. The converge button (partially) converges the system using SCFT. It only runs a few steps. To converge more, press the button again.</p>
+        <p>The image above shows the A monomer concentration for ablend of AB diblock copolymers + A and B homopolymers. You can modify the input parameters:<br>
+        xN: Flory-Huggins interaction parameter between A and B monomers<br>
+        f: Volume fractional composition of A monomers in the diblock<br>
+        L: system length, in units of Re<br>
+        pA and pB: average A and B homopolymer concentrations. If pA+pB < 1,  copolymer fills the rest<br>
+       Nh/N: Ratio of homopolymer to copolymer lengths<br>
+       You can draw on the image to change the state of the system. The converge button (partially) converges the system using SCFT. It only runs a few steps. To converge more, press the button again.</p>
 
-        <p>Note that the numerical stability depends on the number of steps along the chain (which is fixed) and the system resolution (which changes with L) so it may become unstable. Also note that the progress is given as a fraction of the max number of steps, not a measure of the actual convergence.</p>
+        <p>Note that the numerical stability of the concentration calculation depends on the number of steps along the chain (which is fixed) and the system resolution (which changes with L) so it may become unstable. The convergence stability also depends on the concentration gradients and update rate (which is fixed) so that may also become unstable. Also note that the progress is given as a fraction of the max number of steps, not a measure of the actual convergence.</p>
         
-        <p>You can open the console to show more detail in the convergence progress, specifically the root mean squared 'error' in the A and B fields. The convergence algorithm that I implemented is a slow one, so it may be... slow. </p>
+        <p>The quoted RMS error is the root mean squared 'error' in the A and B fields i.e. deviation from the SCFT field equations. The convergence algorithm that I implemented is a slow one, so it may be... slow. I typically want a rms error of 1E-4 or less, but it will be difficult to get there with this slow scheme running on JS.</p>
+        
+        <p>The code is provided with neither guarantee or warantee. I quickly put it together to play with, and it may have bugs. If you find any, please let me know. </p>
 
         <script>
             function updateValue(sliderId, displayId) {
