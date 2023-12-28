@@ -207,7 +207,7 @@
                 displayField(phiA2D, [m0, m1, m2]);
                 
                 
-                let skip = 10; // Number of steps to skip before updating the picture
+                let skip = 1; // Number of steps to skip before updating the picture
                     let rmsDA, rmsDB;
                     let iteration = 0;
                     
@@ -552,6 +552,15 @@
                 let fa = getCanvasData(m);
 
                 for (let i = 0; i < M; i++) {
+                    //one way of getting fields from image. Doesn't work. not sure why atm.
+                    //let wm = chiN*(1.0-2.0*phiAn[i]);
+                    //let wp = fieldA[i] + fieldB[i];
+                    //let wa = 0.5*(wm+wp);
+                    //let wb = 0.5*(wm-wp);
+                    //fieldA[i] = wa;
+                    //fieldB[i] = wb;
+                    
+                    //update fields according to changes in pic
                     fieldA[i] -= chiN*(phiAn[i]-phiA[i]);
                     fieldB[i] += chiN*(phiAn[i]-phiA[i]);
                 }
