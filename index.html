@@ -434,7 +434,14 @@
                 Qb /= M;
                 
                 
-
+                //useful in debugging
+                let tot=0.0;
+                let tota=0.0;
+                let totb=0.0;
+                let totc=0.0;
+                //
+                
+                
                 //console.log("Qs",Q,Qa,Qb);
                 //console.log("ps",pA,pB,pC);
                 for (let r = 0; r < M; r++) {
@@ -442,33 +449,46 @@
                     phiB[r] = (pC * ds / Q ) * (q1[NA][r]*q2[NB][r] + q1[N][r]*q2[0][r])/2;
                     phiA[r] += (pA * ds / (Qa*aa)) * qa[0][r]*qa[Nh][r];
                     phiB[r] += (pB * ds / (Qb*aa)) * qb[0][r]*qb[Nh][r];
+                        
+                    //useful in debuging:
+                    totc += (pC * ds / Q ) * (q1[0][r]*q2[N][r] + q1[NA][r]*q2[NB][r])/2 +(pC * ds / Q ) * (q1[NA][r]*q2[NB][r] + q1[N][r]*q2[0][r])/2;
+                    tota += (pA * ds / (Qa*aa)) * qa[0][r]*qa[Nh][r];
+                    totb += (pB * ds / (Qb*aa)) * qb[0][r]*qb[Nh][r];
                 }
                 
                 // Calculate the concentrations
                 for (s=1; s<NA; s++){
                     for (r=0; r<M; r++){
                         phiA[r] += (pC * ds / Q ) *q1[s][r]*q2[N-s][r];
+                        //useful in debuging:
+                        totc +=(pC * ds / Q ) *q1[s][r]*q2[N-s][r];
                     }
                 }
                 
                 for (s=NA+1; s<N; s++){
                     for (r=0; r<M; r++){
                         phiB[r] += (pC * ds / Q ) *q1[s][r]*q2[N-s][r];
+                        //useful in debuging:
+                        totc +=(pC * ds / Q ) *q1[s][r]*q2[N-s][r];
                     }
                 }
+
                 for (s=1; s<Nh; s++){
                     for (r=0; r<M; r++){
                         phiB[r] += (pB * ds / (Qb*aa) ) *qb[s][r]*qb[Nh-s][r];
                         phiA[r] += (pA * ds / (Qa*aa) ) *qa[s][r]*qa[Nh-s][r];
+                        
+                        //useful in debuging:
+                        tota += (pB * ds / (Qb*aa) ) *qb[s][r]*qb[Nh-s][r];
+                        totb += (pA * ds / (Qa*aa) ) *qa[s][r]*qa[Nh-s][r];
                     }
                 }
                      
-                               //useful in debugging
-                //let tot=0.0;
-                //for (let r = 0; r < M; r++) {
-                //    tot += phiA[r]+phiB[r];
-                //}
-                //console.log("tot",tot/M,Nh);
+               //useful in debuging:
+               for (let r = 0; r < M; r++) {
+                   tot += phiA[r]+phiB[r];
+                }
+                //console.log("tot",tot/M,":",tota/M,totb/M,totc/M);
                                
                 return [phiA, phiB];
                 
@@ -491,7 +511,7 @@
                 let [phiA, phiB] = diblock(fieldA, fieldB, N, m, D, f,pA,pB,aa);
                 let phiA2D = [];
                 
-                let maxit=200;
+                let maxit=500;
                 
                 // Calculate DA and DB
                 let DA = phiB.map((val, idx) => chiN * (val - 1.0 + f) - 0.5 * (fieldA[idx] - fieldB[idx]));
