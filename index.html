@@ -81,13 +81,26 @@
        Nh/N: Ratio of homopolymer to copolymer lengths<br>
        You can draw on the image to change the state of the system. The converge button (partially) converges the system using SCFT. It only runs a few steps. To converge more, press the button again.</p>
 
-        <p>Note that the numerical stability of the concentration calculation depends on the number of steps along the chain (which is fixed) and the system resolution (which changes with L) so it may become unstable. The convergence stability also depends on the concentration gradients and update rate (which is fixed) so that may also become unstable. Also note that the progress is given as a fraction of the max number of steps, not a measure of the actual convergence.</p>
-        
-        <p>The quoted RMS error is the root mean squared 'error' in the A and B fields i.e. deviation from the SCFT field equations. The convergence algorithm that I implemented is a slow one, so it may be... slow. I typically want a rms error of 1E-4 or less, but it will be difficult to get there with this slow scheme running on JS.</p>
-        
+       <p>Explanations and disclaimers:</p>
+       <p>The quoted RMS error is the root mean squared 'error' in the A and B fields i.e. deviation from the SCFT field equations.<br>
+       The convergence algorithm that I implemented is a slow one, so it may be... slow. I typically want a rms error of 1E-4 or less, but it will be slow to get there with this scheme running on JS.<br>
+       Depending on the lattice spacing (~ 1/L), chain discretization (fixed), and sharpness of interfaces (chiN), it may be difficult to resolve the interfaces and may asymptote towards a finite error.<br>
+       The numerical stability of the concentration calculation depends on the number of steps along the chain (which is fixed) and the system resolution (which changes with L) so it may become unstable.<br>
+       The convergence stability also depends on the concentration gradients and update rate (which is fixed) so that may also become unstable.<br>
+       </p>
+
         <p>The code is provided with neither guarantee or warantee. I quickly put it together to play with, and it may have bugs. If you find any, please let me know. </p>
 
         <script>
+            // Global variables
+            let stopit = false;
+            let upcanvas = false;
+            const N=200;
+            const m0=1;
+            const m1=50;
+            const m2=50;
+            
+            
             function updateValue(sliderId, displayId) {
                 document.getElementById(displayId).textContent = document.getElementById(sliderId).value;
             }
@@ -191,11 +204,6 @@
                 const inputData = document.getElementById('inputData').value;
                 const lines = inputData.split('\n');
                 const flag = parseInt(lines[3].trim());
-                const N=200;
-                const m0=1;
-                const m1=50;
-                const m2=50;
-                
 
                 const chiN = parseFloat(document.getElementById('chiN').value);
                 const f = parseFloat(document.getElementById('f').value);
@@ -256,11 +264,6 @@
                 const inputData = document.getElementById('inputData').value;
                 const lines = inputData.split('\n');
                 const flag = parseInt(lines[3].trim());
-                const N=200;
-                const m0=1;
-                const m1=50;
-                const m2=50;
-                
 
                 const chiN = parseFloat(document.getElementById('chiN').value);
                 const f = parseFloat(document.getElementById('f').value);
@@ -307,7 +310,7 @@
             }
             
             // Place the new JavaScript code here
-            var M, N, m = [], W = [], q1 = [], q2 = [], qa = [], qb = [], expWA = [], expWB = [], expWA2 = [], expWB2 = [], qt = [];
+            var M, m = [], W = [], q1 = [], q2 = [], qa = [], qb = [], expWA = [], expWB = [], expWA2 = [], expWB2 = [], qt = [];
             var phiA = [], phiB = [];
             var chi, f, pA, pB, L, S1, S2, r, x, y, z;
             var dx = [];
@@ -489,7 +492,6 @@
                    tot += phiA[r]+phiB[r];
                 }
                 //console.log("tot",tot/M,":",tota/M,totb/M,totc/M);
-                               
                 return [phiA, phiB];
                 
             }
@@ -499,7 +501,7 @@
                 return Math.sqrt(sumOfSquares / array.length);
             }
             
-            let stopit = false; // Global variable
+
 
             function stopConvergence() {
                 stopit = true;
@@ -596,6 +598,9 @@
                     ctx.beginPath();
                     ctx.arc(x, y, brushSize / 2, 0, Math.PI * 2); // Draw a circle
                     ctx.fill();
+                    
+                    // update the fields with the new canvas data
+                    upcanvas = true;
                 }
 
                 canvas.addEventListener('mousedown', (e) => {
@@ -645,6 +650,8 @@
 
 
             function updateFieldsFromCanvas(chiN, m,fieldA,fieldB,phiA,phiB) {
+                if (!upcanvas)
+                    return [fieldA, fieldB];
                 let phiAn = getCanvasData(m);
                 let phiBn = phiA.map(val => 1.0 - val);
                 const M = m[0] * m[1] * m[2];
@@ -664,7 +671,7 @@
                     fieldA[i] -= chiN*(phiAn[i]-phiA[i]);
                     fieldB[i] += chiN*(phiAn[i]-phiA[i]);
                 }
-
+                upcanvas = false;
                 return [fieldA, fieldB];
             }
             function updateValuesab() {
@@ -699,7 +706,7 @@
                 updateValue('L', 'LValue');
                 
                 // Initialize fields
-                    const m = [1, 50, 50]; // Adjust 'm' as needed based on your grid
+                    const m = [m0, m1, m2]; // Adjust 'm' as needed based on your grid
                     const fieldData = initializeFields(m);
                     document.getElementById('inputData').value = fieldData;
                     Init();
