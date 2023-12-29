@@ -41,8 +41,8 @@
 
         <div>
             <!-- <label for="chiN">chiN: <span id="chiNValue">20</span></label> -->
-            <label for="chiN">chiN: <span id="chiNValue" class="valueDisplay">20</span></label>
-            <input type="range" id="chiN" name="chiN" min="0" max="50" step="0.1" value="20" oninput="updateValue('chiN', 'chiNValue')"><br>
+            <label for="chiN">chiN: <span id="chiNValue" class="valueDisplay">15</span></label>
+            <input type="range" id="chiN" name="chiN" min="0" max="50" step="0.1" value="15" oninput="updateValue('chiN', 'chiNValue')"><br>
 
             <label for="f">f: <span id="fValue" class="valueDisplay">0.5</span></label>
             <input type="range" id="f" name="f" min="0" max="1" step="0.02" value="0.5" oninput="updateValue('f', 'fValue')"><br>
@@ -668,8 +668,8 @@
                     //fieldB[i] = wb;
                     
                     //update fields according to changes in pic
-                    fieldA[i] -= chiN*(phiAn[i]-phiA[i]);
-                    fieldB[i] += chiN*(phiAn[i]-phiA[i]);
+                    fieldA[i] -= 0.5*chiN*(phiAn[i]-phiA[i]);
+                    fieldB[i] += 0.5*chiN*(phiAn[i]-phiA[i]);
                 }
                 upcanvas = false;
                 return [fieldA, fieldB];
